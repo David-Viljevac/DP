@@ -1,0 +1,83 @@
+//uzimamo li u obzir 3 razine svih mogucnosti imamo sljedecu bazu podataka
+//moramo uzeti u obzir kako se ovdje izracunavaju bruto place(osim studenta) i ako se dobije plaća manja od minimalne ona bi se u aplikaciji trebala prikazati kao minimalna plaća
+placa [
+	razinaPotrebe => \integer,
+	razinaOdgovornosti => \integer,
+	razinaIskustva => \integer,
+	razinaSkolovanja => \integer,
+	minimalnaPlaca(\float) => \double,
+	maksimalnaPlaca(\float, \float) => \float,
+	minimalnaPlacaVeterana(\float, \float) => \float,
+	placaStudenta(\float, \integer) => \float,
+	placaRadnikaUCistoci(\float, \float) => \float,
+	placaRadnikaUDrzavnimSluzbama(\float, \float) => \float,
+	placaRadnogStaza(\float, \integer) => \float
+      ].
+
+/*placaPrva : placa [
+		    razinaPotrebe -> 1,
+		    razinaOdgovornosti -> 1,
+		    razinaIskustva -> 1,
+		    razinaSkolovanja -> 1
+		  ].
+placaDruga : placa [
+		    razinaPotrebe -> 2,
+		    razinaOdgovornosti -> 1,
+		    razinaIskustva -> 1,
+		    razinaSkolovanja -> 2
+		  ].
+placaDruga : placa [
+		    razinaPotrebe -> 2,
+		    razinaOdgovornosti -> 2,
+		    razinaIskustva -> 2,
+		    razinaSkolovanja -> 2
+   ].*/
+
+placaTreca : placa [
+		    razinaPotrebe -> 3,
+		    razinaOdgovornosti -> 3,
+		    razinaIskustva -> 3,
+		    razinaSkolovanja -> 3
+		  ].
+
+?placa [ minimalnaPlaca(?minimalnaPlacaDrzave)
+	 -> ?minimalnaPlaca] :- ?placa[ razinaPotrebe -> ?potreba],
+	?placa[razinaOdgovornosti -> ?odgovornost],
+	?placa[razinaIskustva -> ?iskustvo],
+	?placa[razinaSkolovanja -> ?skolovanje],
+	?minimalnaPlaca \is ((?potreba * ?iskustvo * ?odgovornost * ?skolovanje)/15 * ?minimalnaPlacaDrzave).
+
+
+?placa [ maksimalnaPlaca(?minimalnaPlacaDrzave, ?faktorPovisenja)
+	 -> ?maksimalnaPlaca] :- ?placa[ razinaPotrebe -> ?potreba],
+	?placa[razinaOdgovornosti -> ?odgovornost],
+	?placa[razinaIskustva -> ?iskustvo],
+	?placa[razinaSkolovanja -> ?skolovanje],
+	?maksimalnaPlaca \is ((?potreba * ?iskustvo * ?odgovornost * ?skolovanje)/15 * ?minimalnaPlacaDrzave * ?faktorPovisenja).
+
+?placa [ minimalnaPlacaVeterana(?minimalnaPlacaDrzave, ?faktorPovisenja)
+	 -> ?placaVeterana] :- ?placa[ razinaPotrebe -> ?potreba],
+	?placa[razinaOdgovornosti -> ?odgovornost],
+	?placa[razinaIskustva -> ?iskustvo],
+	?placa[razinaSkolovanja -> ?skolovanje],
+	?placaVeterana \is ((?potreba * ?iskustvo * ?odgovornost * ?skolovanje)/15 * ?minimalnaPlacaDrzave * ?faktorPovisenja).
+
+?placa [ placaStudenta(?satnica, ?formatSati)
+	 -> ?placaStudenta] :-
+	?placaStudenta \is (?satnica * ?formatSati).
+
+?placa [ placaRadnikaUCistoci(?minimalnaPlacaDrzave, ?naknada)
+	 -> ?placaRadnikaUCistoci] :- ?placa[ razinaPotrebe -> ?potreba],
+	?placa[razinaOdgovornosti -> ?odgovornost],
+	?placaRadnikaUCistoci \is ((?potreba * ?odgovornost)/4 * ?minimalnaPlacaDrzave + ?naknada).
+
+?placa [ placaRadnikaUDrzavnimSluzbama(?minimalnaPlacaDrzave, ?faktorPovisenja)
+	 -> ?placaRadnikaUCistoci] :- ?placa[ razinaPotrebe -> ?potreba],
+	?placa[razinaOdgovornosti -> ?odgovornost],
+	?placa[razinaIskustva -> ?iskustvo],
+	?placa[razinaSkolovanja -> ?skolovanje],
+	?placaRadnikaUCistoci \is ((?potreba * ?iskustvo * ?odgovornost * ?skolovanje)/15 * ?minimalnaPlacaDrzave * ?faktorPovisenja).
+
+?placa [ placaRadnogStaza(?sadasnjaPlaca, ?radniStaz)
+	 -> ?placaRadnogStaza] :-
+	?placaRadnogStaza \is (?sadasnjaPlaca * (1 + ?radniStaz/400)).
